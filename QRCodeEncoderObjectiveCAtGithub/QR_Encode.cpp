@@ -11,7 +11,7 @@ static char THIS_FILE[] = __FILE__;
 
 /////////////////////////////////////////////////////////////////////////////
 // QRコードバージョン(型番)情報
-static QR_VERSIONINFO QR_VersonInfo[] = {{0}, // (ダミー:Ver.0)
+static QR_VERSIONINFO QR_VersionInfo[] = {{0}, // (ダミー:Ver.0)
 										 { 1, // Ver.1
 										    26,   19,   16,   13,    9,
 										   0,   0,   0,   0,   0,   0,   0,
@@ -653,7 +653,7 @@ bool CQR_Encode::EncodeData(int nLevel, int nVersion, bool bAutoExtent, int nMas
 	}
 
 	// ターミネータコード"0000"付加
-	int ncDataCodeWord = QR_VersonInfo[m_nVersion].ncDataCodeWord[nLevel];
+	int ncDataCodeWord = QR_VersionInfo[m_nVersion].ncDataCodeWord[nLevel];
 
 	int ncTerminater = min(4, (ncDataCodeWord * 8) - m_ncDataCodeWordBit);
 
@@ -671,21 +671,21 @@ bool CQR_Encode::EncodeData(int nLevel, int nVersion, bool bAutoExtent, int nMas
 	}
 
 	// 総コードワード算出エリアクリア
-	m_ncAllCodeWord = QR_VersonInfo[m_nVersion].ncAllCodeWord;
+	m_ncAllCodeWord = QR_VersionInfo[m_nVersion].ncAllCodeWord;
 	ZeroMemory(m_byAllCodeWord, m_ncAllCodeWord);
 
 	int nDataCwIndex = 0; // データコードワード処理位置
 
 	// データブロック分割数
-	int ncBlock1 = QR_VersonInfo[m_nVersion].RS_BlockInfo1[nLevel].ncRSBlock;
-	int ncBlock2 = QR_VersonInfo[m_nVersion].RS_BlockInfo2[nLevel].ncRSBlock;
+	int ncBlock1 = QR_VersionInfo[m_nVersion].RS_BlockInfo1[nLevel].ncRSBlock;
+	int ncBlock2 = QR_VersionInfo[m_nVersion].RS_BlockInfo2[nLevel].ncRSBlock;
 	int ncBlockSum = ncBlock1 + ncBlock2;
 
 	int nBlockNo = 0; // 処理中ブロック番号
 
 	// ブロック別データコードワード数
-	int ncDataCw1 = QR_VersonInfo[m_nVersion].RS_BlockInfo1[nLevel].ncDataCodeWord;
-	int ncDataCw2 = QR_VersonInfo[m_nVersion].RS_BlockInfo2[nLevel].ncDataCodeWord;
+	int ncDataCw1 = QR_VersionInfo[m_nVersion].RS_BlockInfo1[nLevel].ncDataCodeWord;
+	int ncDataCw2 = QR_VersionInfo[m_nVersion].RS_BlockInfo2[nLevel].ncDataCodeWord;
 
 	// データコードワードインターリーブ配置
 	for (i = 0; i < ncBlock1; ++i)
@@ -717,8 +717,8 @@ bool CQR_Encode::EncodeData(int nLevel, int nVersion, bool bAutoExtent, int nMas
 	}
 
 	// ブロック別ＲＳコードワード数(※現状では同数)
-	int ncRSCw1 = QR_VersonInfo[m_nVersion].RS_BlockInfo1[nLevel].ncAllCodeWord - ncDataCw1;
-	int ncRSCw2 = QR_VersonInfo[m_nVersion].RS_BlockInfo2[nLevel].ncAllCodeWord - ncDataCw2;
+	int ncRSCw1 = QR_VersionInfo[m_nVersion].RS_BlockInfo1[nLevel].ncAllCodeWord - ncDataCw1;
+	int ncRSCw2 = QR_VersionInfo[m_nVersion].RS_BlockInfo2[nLevel].ncAllCodeWord - ncDataCw2;
 
 	/////////////////////////////////////////////////////////////////////////
 	// ＲＳコードワード算出
@@ -779,34 +779,34 @@ bool CQR_Encode::EncodeData(int nLevel, int nVersion, bool bAutoExtent, int nMas
 
 int CQR_Encode::GetEncodeVersion(int nVersion, LPCSTR lpsSource, int ncLength)
 {
-	int nVerGroup = nVersion >= 27 ? QR_VRESION_L : (nVersion >= 10 ? QR_VRESION_M : QR_VRESION_S);
+	int nVerGroup = nVersion >= 27 ? QR_VERSION_L : (nVersion >= 10 ? QR_VERSION_M : QR_VERSION_S);
 	int i, j;
 
-	for (i = nVerGroup; i <= QR_VRESION_L; ++i)
+	for (i = nVerGroup; i <= QR_VERSION_L; ++i)
 	{
 		if (EncodeSourceData(lpsSource, ncLength, i))
 		{
-			if (i == QR_VRESION_S)
+			if (i == QR_VERSION_S)
 			{
 				for (j = 1; j <= 9; ++j)
 				{
-					if ((m_ncDataCodeWordBit + 7) / 8 <= QR_VersonInfo[j].ncDataCodeWord[m_nLevel])
+					if ((m_ncDataCodeWordBit + 7) / 8 <= QR_VersionInfo[j].ncDataCodeWord[m_nLevel])
 						return j;
 				}
 			}
-			else if (i == QR_VRESION_M)
+			else if (i == QR_VERSION_M)
 			{
 				for (j = 10; j <= 26; ++j)
 				{
-					if ((m_ncDataCodeWordBit + 7) / 8 <= QR_VersonInfo[j].ncDataCodeWord[m_nLevel])
+					if ((m_ncDataCodeWordBit + 7) / 8 <= QR_VersionInfo[j].ncDataCodeWord[m_nLevel])
 						return j;
 				}
 			}
-			else if (i == QR_VRESION_L)
+			else if (i == QR_VERSION_L)
 			{
 				for (j = 27; j <= 40; ++j)
 				{
-					if ((m_ncDataCodeWordBit + 7) / 8 <= QR_VersonInfo[j].ncDataCodeWord[m_nLevel])
+					if ((m_ncDataCodeWordBit + 7) / 8 <= QR_VersionInfo[j].ncDataCodeWord[m_nLevel])
 						return j;
 				}
 			}
@@ -1520,14 +1520,14 @@ void CQR_Encode::SetFunctionModule()
 	SetVersionPattern();
 
 	// 位置合わせパターン
-	for (i = 0; i < QR_VersonInfo[m_nVersion].ncAlignPoint; ++i)
+	for (i = 0; i < QR_VersionInfo[m_nVersion].ncAlignPoint; ++i)
 	{
-		SetAlignmentPattern(QR_VersonInfo[m_nVersion].nAlignPoint[i], 6);
-		SetAlignmentPattern(6, QR_VersonInfo[m_nVersion].nAlignPoint[i]);
+		SetAlignmentPattern(QR_VersionInfo[m_nVersion].nAlignPoint[i], 6);
+		SetAlignmentPattern(6, QR_VersionInfo[m_nVersion].nAlignPoint[i]);
 
-		for (j = 0; j < QR_VersonInfo[m_nVersion].ncAlignPoint; ++j)
+		for (j = 0; j < QR_VersionInfo[m_nVersion].ncAlignPoint; ++j)
 		{
-			SetAlignmentPattern(QR_VersonInfo[m_nVersion].nAlignPoint[i], QR_VersonInfo[m_nVersion].nAlignPoint[j]);
+			SetAlignmentPattern(QR_VersionInfo[m_nVersion].nAlignPoint[i], QR_VersionInfo[m_nVersion].nAlignPoint[j]);
 		}
 	}
 

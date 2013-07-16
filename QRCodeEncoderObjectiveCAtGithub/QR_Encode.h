@@ -25,9 +25,9 @@
 #define QR_MODE_KANJI		3
 
 // バージョン(型番)グループ
-#define QR_VRESION_S	0 // 1 ～ 9
-#define QR_VRESION_M	1 // 10 ～ 26
-#define QR_VRESION_L	2 // 27 ～ 40
+#define QR_VERSION_S	0 // 1 ～ 9
+#define QR_VERSION_M	1 // 10 ～ 26
+#define QR_VERSION_L	2 // 27 ～ 40
 
 #define MAX_ALLCODEWORD	 3706 // 総コードワード数最大値
 #define MAX_DATACODEWORD 2956 // データコードワード最大値(バージョン40-L)
@@ -67,13 +67,18 @@ typedef struct tagQR_VERSIONINFO
 
 } QR_VERSIONINFO, *LPQR_VERSIONINFO;
 
-typedef unsigned short WORD;
-
-typedef unsigned char BYTE;
-
-typedef BYTE* LPBYTE;
-
-typedef const char* LPCSTR;
+#ifndef WORD
+#define WORD unsigned short
+#endif
+#ifndef BYTE
+#define BYTE unsigned char
+#endif
+#ifndef LPBYTE
+#define LPBYTE BYTE *
+#endif
+#ifndef LPCSTR
+#define LPCSTR const char *
+#endif
 
 #define ZeroMemory(Destination,Length) memset((Destination),0,(Length))
 
