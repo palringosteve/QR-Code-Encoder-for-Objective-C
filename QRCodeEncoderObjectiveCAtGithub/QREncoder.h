@@ -28,6 +28,7 @@ const static unsigned char WHITE =  0xff;
 + (DataMatrix*)encodeWithECLevel:(int)ecLevel version:(int)version string:(NSString*)string;
 
 + (UIImage*)renderDataMatrix:(DataMatrix*)matrix imageDimension:(int)imageDimension;
++ (UIImage*)renderDataMatrix:(DataMatrix*)matrix imageDimension:(int)imageDimension scale:(CGFloat)scale;
 
 @end
 

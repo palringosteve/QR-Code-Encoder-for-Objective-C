@@ -85,6 +85,12 @@
 }
 
 + (UIImage*)renderDataMatrix:(DataMatrix*)matrix imageDimension:(int)imageDimension {
+    return [self renderDataMatrix:matrix imageDimension:imageDimension scale:1];
+}
+
++ (UIImage*)renderDataMatrix:(DataMatrix*)matrix imageDimension:(int)imageDimension scale:(CGFloat)scale {
+    
+    imageDimension *= scale;
     
     const int bitsPerPixel = BITS_PER_BYTE * BYTES_PER_PIXEL;
     const int bytesPerLine = BYTES_PER_PIXEL * imageDimension;
@@ -148,7 +154,7 @@
                                         provider,
                                         NULL,NO,renderingIntent);
     
-    UIImage *newImage = [UIImage imageWithCGImage:imageRef];
+    UIImage *newImage = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
     
     CGImageRelease(imageRef);
     CGColorSpaceRelease(colorSpaceRef);
